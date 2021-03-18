@@ -67,20 +67,25 @@ class Autopilot():
             try:
                 self.request = requests.get(self.request_endpoint)
                 self.received_command = self.request.json()['command']
+
+                for module in self.modules:
+
+                    try:
+                        module.run(self)
+                        logging.info("{}: SUCCEED".format(module))
+                    except Exception:
+                        logging.warning("{}: FAILS".format(module))
+                        logging.warning(traceback.format_exc())
+                self._update_clock()
+                time.sleep(self.current_clock)
+            
             except requests.exceptions.ConnectionError as e:
                 logging.warning("NO CONNECTION TO ENDPOINT {}".format(self.request_endpoint))
+                logging.warning("TRYING TO RECONNECT TO 4G INTERNET")
+                os.system("sh /home/pi/Desktop/internet/mkrzy_instructions.sh > /home/pi/Desktop/internet/mkrzy_instructions.logs 2>&1")
+                time.sleep(20)
                 self.received_command = ''
 
-            for module in self.modules:
-
-                try:
-                    module.run(self)
-                    logging.info("{}: SUCCEED".format(module))
-                except Exception:
-                    logging.warning("{}: FAILS".format(module))
-                    logging.warning(traceback.format_exc())
-            self._update_clock()
-            time.sleep(self.current_clock)
 
 if __name__ == "__main__":
     pilot = Autopilot(active_clock=10, inactive_clock=120)

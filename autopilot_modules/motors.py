@@ -18,7 +18,7 @@ class MotorsRelay():
             return False
         logging.warning('RECEIVED COMMAND {}'.format(command))
 
-        if 'STOP' in command:
+        if 'STOP' in command or 'BACK' in command:
             self.right_motor.on()
             self.left_motor.on()
         if 'LEFT' in command:
@@ -37,4 +37,6 @@ class MotorsRelay():
             received_length = None
         length = received_length if received_length else 2
         time.sleep(int(length))
+        self.right_motor.on()
+        self.left_motor.on()
         return True
