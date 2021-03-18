@@ -8,8 +8,8 @@ class Camera():
 
     def run(self, autopilot):
         """commands in the form CAMERA"""
-        command = autopilot.request_text
-        if 'CAMERA' not in command:
+        command = autopilot.received_command
+        if command is None or 'IMAGE' not in command:
             return False
 
         pic_name = time.ctime().replace(' ', '_')

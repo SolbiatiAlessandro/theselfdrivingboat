@@ -41,7 +41,7 @@ class Autopilot():
         clocks goes incrementally from active to inactive to save energy
         """
         self.current_clock_iteration += 1
-        if self.request_text != '':
+        if self.received_command != '' and self.received_command is not None:
             self.current_clock = self.active_clock
         else:
             self.current_clock = min(2 * self.current_clock, self.inactive_clock)
@@ -66,10 +66,10 @@ class Autopilot():
         while True:
             try:
                 self.request = requests.get(self.request_endpoint)
-                self.request_text = self.request.text
+                self.received_command = self.request.json()['command']
             except requests.exceptions.ConnectionError as e:
                 logging.warning("NO CONNECTION TO ENDPOINT {}".format(self.request_endpoint))
-                self.request_text = ''
+                self.received_command = ''
 
             for module in self.modules:
 
